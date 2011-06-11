@@ -1,0 +1,5 @@
+= csonv.js CHANGELOG
+
+== Version 0.1.0 (June xx, 2011)
+
+* Initial release
