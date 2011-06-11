@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8"/>
     <title>
-      csonv.js - Test page
+      archan937@github: /csonv.js - demo
     </title>
-    <link  href="https://raw.github.com/archan937/csonv.js/master/demo/style.css" type="text/css" rel="stylesheet" media="screen"/>
-    <script src="https://raw.github.com/archan937/csonv.js/master/src/csonv.js"   type="text/javascript"></script>
+    <link  href="assets/style.css" type="text/css" rel="stylesheet" media="screen"/>
+    <script src="assets/csonv.js"  type="text/javascript"></script>
     <script>
       function fetch() {
-        var data      = "https://raw.github.com/archan937/csonv.js/master/demo/family.csv".toData();
+        var data      = "assets/family.csv".toData();
         var indention = "    ";
         var result    = JSON.stringify(data, null, indention.length).replace(/\[\{/, "[\n" + indention + "{");
         document.getElementById("result").innerHTML = result;
