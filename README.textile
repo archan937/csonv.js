@@ -20,6 +20,12 @@ h2. Contact me
 
 For support, remarks and requests please mail me at "paul.engel@holder.nl":mailto:paul.engel@holder.nl.
 
+h2. Credit
+
+The *String.splitCsv()* function is written by Brian Huisman (GreyWyvern):
+
+"http://www.greywyvern.com":http://www.greywyvern.com - "The blog post":http://www.greywyvern.com/?post=258
+
 h2. License
 
 Copyright (c) 2011 Paul Engel, released under the MIT license
