@@ -12,6 +12,47 @@ if (typeof(Csonv) == "undefined") {
 // *
 
 Csonv = (function() {
+  var methods = null;
+
+  var defineParseMethods = function() {
+    var arrayOf = function(type, values) {
+      var strings = values.splitCsv(",");
+      var result  = [];
+      for (var i = 0; i < strings.length; i++) {
+        result.push(methods[type](strings[i]));
+      }
+      return result;
+    };
+
+    methods = {
+      "string": function(value) {
+        return value.toString();
+      },
+      "integer": function(value) {
+        return parseInt(value, 10);
+      },
+      "float": function(value) {
+        return parseFloat(value);
+      },
+      "boolean": function(value) {
+        return parseInt(value, 10) == 1;
+      }
+    };
+
+    methods.strings  = function(value) {
+      return arrayOf("string" , value);
+    };
+    methods.integers = function(value) {
+      return arrayOf("integer", value);
+    };
+    methods.floats   = function(value) {
+      return arrayOf("float"  , value);
+    };
+    methods.booleans = function(value) {
+      return arrayOf("boolean", value);
+    };
+  };
+
   var fetch = function(url) {
     var csv = ajax(url);
     return csvToJson(csv);
@@ -45,36 +86,6 @@ Csonv = (function() {
   };
 
   var collectParseMethods = function(types) {
-    var methods = {
-      "string": function(value) {
-        return value.toString();
-      },
-      "integer": function(value) {
-        return parseInt(value, 10);
-      },
-      "boolean": function(value) {
-        return parseInt(value, 10) == 1;
-      },
-      "strings": function(value) {
-        return value.splitCsv(",");
-      },
-      "integers": function(value) {
-        var strings  = value.split(",");
-        var integers = [];
-        for (var i = 0; i < strings.length; i++) {
-          integers.push(parseInt(strings[i], 10));
-        }
-        return integers;
-      },
-      "booleans": function(value) {
-        var strings  = value.split(",");
-        var booleans = [];
-        for (var i = 0; i < strings.length; i++) {
-          booleans.push(parseInt(strings[i], 10) == 1);
-        }
-        return booleans;
-      }
-    }
     var result = [];
     for (var i = 0; i < types.length; i++) {
       result.push(methods[types[i]]);
@@ -86,6 +97,7 @@ Csonv = (function() {
     version: "{version}",
     sep: ";",
     init: function() {
+      defineParseMethods();
       if (typeof(onCsonvReady) == "function") {
         onCsonvReady();
       };
@@ -113,5 +125,7 @@ String.prototype.splitCsv = function(sep) {
       } else foo = foo.shift().split(sep).concat(foo);
     } else foo[x].replace(/""/g, '"');
   } return foo; };
+
+Csonv.init();
 
 }
