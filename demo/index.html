@@ -9,7 +9,7 @@
     <script src="../src/csonv.js" type="text/javascript"></script>
     <script>
       function fetch() {
-        var data      = "family".csv();
+        var data      = "family.csv".fetch();
         var indention = "    ";
         var result    = JSON.stringify(data, null, indention.length).replace(/\[\{/, "[\n" + indention + "{");
         document.getElementById("result").innerHTML = result;

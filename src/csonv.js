@@ -100,14 +100,8 @@ Csonv = (function() {
   };
 }());
 
-csonv = function(url) {
-  return Csonv.fetch(url); };
-
-String.prototype.csonv = function() {
-  return this.csv(); };
-
-String.prototype.csv = function() {
-  return Csonv.fetch(this.toString() + ".csv"); };
+String.prototype.fetch = function() {
+  return Csonv.fetch(this.toString()); };
 
 String.prototype.splitCsv = function(sep) {
   for (var foo = this.split(sep = sep || Csonv.sep), x = foo.length - 1, tl; x >= 0; x--) {
