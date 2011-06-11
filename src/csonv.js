@@ -12,19 +12,19 @@ if (typeof(Csonv) == "undefined") {
 // *
 
 Csonv = (function() {
-  var methods = null;
+  var parseMethods = null;
 
   var defineParseMethods = function() {
     var arrayOf = function(type, values) {
       var strings = values.splitCsv(",");
       var result  = [];
       for (var i = 0; i < strings.length; i++) {
-        result.push(methods[type](strings[i]));
+        result.push(parseMethods[type](strings[i]));
       }
       return result;
     };
 
-    methods = {
+    parseMethods = {
       "string": function(value) {
         return value.toString();
       },
@@ -39,16 +39,16 @@ Csonv = (function() {
       }
     };
 
-    methods.strings  = function(value) {
+    parseMethods.strings  = function(value) {
       return arrayOf("string" , value);
     };
-    methods.integers = function(value) {
+    parseMethods.integers = function(value) {
       return arrayOf("integer", value);
     };
-    methods.floats   = function(value) {
+    parseMethods.floats   = function(value) {
       return arrayOf("float"  , value);
     };
-    methods.booleans = function(value) {
+    parseMethods.booleans = function(value) {
       return arrayOf("boolean", value);
     };
   };
@@ -70,7 +70,11 @@ Csonv = (function() {
     var rows    = csv.split("\n");
     var keys    = rows.shift().splitCsv();
     var types   = rows.shift().splitCsv();
-    var methods = collectParseMethods(types);
+
+    var methods = [];
+    for (var i = 0; i < types.length; i++) {
+      methods.push(parseMethods[types[i]]);
+    }
 
     var json = [];
     for (var i = 0; i < rows.length; i++) {
@@ -83,14 +87,6 @@ Csonv = (function() {
     }
 
     return json;
-  };
-
-  var collectParseMethods = function(types) {
-    var result = [];
-    for (var i = 0; i < types.length; i++) {
-      result.push(methods[types[i]]);
-    }
-    return result;
   };
 
   return {
