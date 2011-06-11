@@ -64,27 +64,27 @@ Csonv = (function() {
     return request.responseText;
   };
 
-  var csvToJson = function(csv) {
-    var rows    = csv.split("\n");
-    var keys    = rows.shift().splitCsv();
-    var types   = rows.shift().splitCsv();
+  var csvToObjects = function(csv) {
+    var rows  = csv.split("\n");
+    var keys  = rows.shift().splitCsv();
+    var types = rows.shift().splitCsv();
 
     var methods = [];
     for (var i = 0; i < types.length; i++) {
       methods.push(parseMethods[types[i]]);
     }
 
-    var json = [];
+    var result = [];
     for (var i = 0; i < rows.length; i++) {
       var row    = rows[i].splitCsv();
       var object = {};
       for (var j = 0; j < keys.length; j++) {
         object[keys[j]] = methods[j](row[j]);
       }
-      json.push(object);
+      result.push(object);
     }
 
-    return json;
+    return result;
   };
 
   return {
