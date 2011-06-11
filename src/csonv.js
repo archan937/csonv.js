@@ -52,6 +52,9 @@ Csonv = (function() {
       "integer": function(value) {
         return parseInt(value, 10);
       },
+      "boolean": function(value) {
+        return parseInt(value, 10) == 1;
+      },
       "strings": function(value) {
         return value.splitCsv(",");
       },
@@ -62,6 +65,14 @@ Csonv = (function() {
           integers.push(parseInt(strings[i], 10));
         }
         return integers;
+      },
+      "booleans": function(value) {
+        var strings  = value.split(",");
+        var booleans = [];
+        for (var i = 0; i < strings.length; i++) {
+          booleans.push(parseInt(strings[i], 10) == 1);
+        }
+        return booleans;
       }
     }
     var result = [];
