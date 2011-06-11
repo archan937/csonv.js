@@ -1,6 +1,6 @@
-id;first_name;last_name
-integer;string;string
-1;Dirk;Engel
-2;Anna;Engel
-3;Bram;Engel
-4;Paul;Engel
+id;first_name;last_name;given_names;numbers
+integer;string;string;strings;integers
+1;Dirk;Engel;Dirk,Julius;24,3
+2;Anna;Engel;Anna,Octovina;14,76
+3;Bram;Engel;Abraham,Theofilus;19,2
+4;Paul;Engel;Paulus,Mathijs;5,11

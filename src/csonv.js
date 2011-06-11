@@ -51,6 +51,17 @@ Csonv = (function() {
       },
       "integer": function(value) {
         return parseInt(value, 10);
+      },
+      "strings": function(value) {
+        return value.splitCsv(",");
+      },
+      "integers": function(value) {
+        var strings  = value.split(",");
+        var integers = [];
+        for (var i = 0; i < strings.length; i++) {
+          integers.push(parseInt(strings[i], 10));
+        }
+        return integers;
       }
     }
     var result = [];
