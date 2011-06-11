@@ -36,26 +36,24 @@ Csonv = (function() {
       },
       "boolean": function(value) {
         return parseInt(value, 10) == 1;
+      },
+      "strings": function(value) {
+        return arrayOf("string", value);
+      },
+      "integers": function(value) {
+        return arrayOf("integer", value);
+      },
+      "floats": function(value) {
+        return arrayOf("float", value);
+      },
+      "booleans": function(value) {
+        return arrayOf("boolean", value);
       }
-    };
-
-    parseMethods.strings  = function(value) {
-      return arrayOf("string" , value);
-    };
-    parseMethods.integers = function(value) {
-      return arrayOf("integer", value);
-    };
-    parseMethods.floats   = function(value) {
-      return arrayOf("float"  , value);
-    };
-    parseMethods.booleans = function(value) {
-      return arrayOf("boolean", value);
     };
   };
 
   var fetch = function(url) {
-    var csv = ajax(url);
-    return csvToJson(csv);
+    return csvToObjects(ajax(url));
   };
 
   var ajax = function(url) {
