@@ -75,11 +75,11 @@ Csonv = (function() {
 csonv = function(url) {
   return Csonv.fetch(url); };
 
-String.prototype.csonv = function(url) {
-  return Csonv.fetch(this.toString() + ".csv"); };
+String.prototype.csonv = function() {
+  return this.csv(); };
 
-String.prototype.csv = function(url) {
-  return this.csonv(); };
+String.prototype.csv = function() {
+  return Csonv.fetch(this.toString() + ".csv"); };
 
 String.prototype.splitCsv = function(sep) {
   for (var foo = this.split(sep = sep || Csonv.sep), x = foo.length - 1, tl; x >= 0; x--) {
