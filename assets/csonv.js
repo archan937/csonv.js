@@ -1,30 +1,30 @@
 if (typeof(Csonv) == "undefined") {
 
 // *
-// * csonv.js 0.1.0 (Uncompressed)
-// * A tiny library to fetch CSV data like JSON
+// * csonv.js 0.1.1 (Uncompressed)
+// * A tiny library to fetch relational CSV data like JSON
 // *
 // * (c) 2011 Paul Engel (Internetbureau Holder B.V.)
 // * Except otherwise noted, csonv.js is licensed under
 // * http://creativecommons.org/licenses/by-sa/3.0
 // *
-// * $Date: 2011-06-12 03:07:27 +0100 (Sun, 12 June 2011) $
+// * $Date: 2011-06-12 17:26:13 +0100 (Sun, 12 June 2011) $
 // *
 
 Csonv = (function() {
-  var parseMethods = null;
+  var parsers = null, cache = {}, maps = {};
 
-  var defineParseMethods = function() {
-    var arrayOf = function(type, values) {
-      var strings = values.csvSplit(",");
+  var defineParsers = function() {
+    var n = function(type, values) {
+      var strings = values.csvSplit(Csonv.separators.array);
       var array   = [];
       for (var i = 0; i < strings.length; i++) {
-        array.push(parseMethods[type](strings[i]));
+        array.push(parsers[type](strings[i]));
       }
       return array;
     };
 
-    parseMethods = {
+    parsers = {
       "string": function(value) {
         return value.toString();
       },
@@ -38,22 +38,35 @@ Csonv = (function() {
         return parseInt(value, 10) == 1;
       },
       "strings": function(value) {
-        return arrayOf("string", value);
+        return n("string", value);
       },
       "integers": function(value) {
-        return arrayOf("integer", value);
+        return n("integer", value);
       },
       "floats": function(value) {
-        return arrayOf("float", value);
+        return n("float", value);
       },
       "booleans": function(value) {
-        return arrayOf("boolean", value);
+        return n("boolean", value);
+      },
+      "relational": function(values, type, url) {
+        var ids       = values.split(Csonv.separators.array);
+        var assoc     = type.split(":");
+        var assoc_url = url.replace(/\w+\.csv$/, assoc[0] + ".csv")
+        var array     = [];
+
+        assoc_url.toObjects();
+
+        for (var i = 0; i < ids.length; i++) {
+          var object = maps[assoc_url][parseInt(ids[i], 10)];
+          if (object) {
+            array.push(object);
+          }
+        }
+
+        return assoc[1] == "one" ? array[0] || null : array;
       }
     };
-  };
-
-  var fetch = function(url) {
-    return csvToObjects(ajax(url));
   };
 
   var ajax = function(url) {
@@ -64,51 +77,64 @@ Csonv = (function() {
     return request.responseText;
   };
 
-  var csvToObjects = function(csv) {
-    var rows  = csv.split("\n");
+  var toObjects = function(data, url) {
+    var rows  = data.split("\n");
     var keys  = rows.shift().csvSplit();
     var types = rows.shift().csvSplit();
 
     var methods = [];
     for (var i = 0; i < types.length; i++) {
-      methods.push(parseMethods[types[i]]);
+      methods.push(parsers[types[i]] || parsers["relational"]);
     }
 
-    var array = [];
+    var data = [];
+    var map  = {};
+
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i].csvSplit(), object = {};
       for (var j = 0; j < keys.length; j++) {
-        object[keys[j]] = methods[j](row[j]);
+        object[keys[j]] = methods[j](row[j], types[j], url);
       }
-      array.push(object);
+      if (object.id) {
+        map[object.id] = object;
+      }
+      data.push(object);
     }
 
-    return array;
+    cache[url] = data;
+    maps[url]  = map;
+
+    return data;
   };
 
   return {
-    version: "0.1.0",
-    sep    : ";",
-    init   : defineParseMethods,
-    fetch  : fetch
+    version: "0.1.1",
+    separators: {
+      column: ";",
+      array : ","
+    },
+    init : defineParsers,
+    fetch: function(url) {
+      return cache[url] || toObjects(ajax(url), url);
+    }
   };
 }());
 
-String.prototype.toData = function() {
+String.prototype.toObjects = function() {
   return Csonv.fetch(this);
 };
 
 String.prototype.csvSplit = function(s) {
-  s = s || Csonv.sep;
+  s = s || Csonv.separators.column;
 
   var reg_exp = new RegExp(("(\\" + s + '|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^"\\' + s + "\\r\\n]*))"), "gi");
-  var row = [], m = null;
+  var str = this.trim(), row = [], m = null;
 
-  if (this.match(new RegExp("^\\" + s))) {
+  if (str.match(new RegExp("^\\" + s))) {
     row.push("");
   }
 
-  while (m = reg_exp.exec(this)) {
+  while (m = reg_exp.exec(str)) {
     var m1 = m[1];
     if (m1.length && (m1 != s)) {
       row.push(m1);
