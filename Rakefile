@@ -28,6 +28,7 @@ task :release, :version do |task, args|
   FileUtils.mkdir_p(release_dir)
 
   # Create files
+  FileUtils.cp("README.textile", "#{release_dir}/README.textile")
   File.open("#{release_dir}/csonv.js", "w").puts(javascript)
   File.open("VERSION", "w").puts(args[:version])
 
