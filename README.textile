@@ -26,9 +26,9 @@ For support, remarks and requests please mail me at "paul.engel@holder.nl":mailt
 
 h2. Credit
 
-The *String.splitCsv()* function is written by Brian Huisman (GreyWyvern):
+The *String.csvSplit()* function is based on Ben Nadel's ("@bennadel":http://twitter.com/bennadel) blog post:
 
-"http://www.greywyvern.com":http://www.greywyvern.com - "The blog post":http://www.greywyvern.com/?post=258
+<a href="http://www.bennadel.com">http://www.bennadel.com</a>/"his-blog-post":http://www.bennadel.com/blog/1504-Ask-Ben-Parsing-CSV-Strings-With-Javascript-Exec-Regular-Expression-Command.htm
 
 h2. License
 
