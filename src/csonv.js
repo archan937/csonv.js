@@ -2,7 +2,7 @@ if (typeof(Csonv) == "undefined") {
 
 // *
 // * csonv.js {version} (Uncompressed)
-// * A tiny library to fetch CSV data like JSON
+// * A tiny library to fetch relational CSV data like JSON
 // *
 // * (c) {year} Paul Engel (Internetbureau Holder B.V.)
 // * Except otherwise noted, csonv.js is licensed under
@@ -12,7 +12,7 @@ if (typeof(Csonv) == "undefined") {
 // *
 
 Csonv = (function() {
-  var parsers = null;
+  var parsers = null, cache = {}, maps = {};
 
   var defineParsers = function() {
     var n = function(type, values) {
@@ -48,6 +48,23 @@ Csonv = (function() {
       },
       "booleans": function(value) {
         return n("boolean", value);
+      },
+      "relational": function(values, type, url) {
+        var ids       = values.split(Csonv.separators.array);
+        var assoc     = type.split(":");
+        var assoc_url = url.replace(/\w+\.csv$/, assoc[0] + ".csv")
+        var array     = [];
+
+        assoc_url.toObjects();
+
+        for (var i = 0; i < ids.length; i++) {
+          var object = maps[assoc_url][parseInt(ids[i], 10)];
+          if (object) {
+            array.push(object);
+          }
+        }
+
+        return assoc[1] == "one" ? array[0] || null : array;
       }
     };
   };
@@ -60,26 +77,34 @@ Csonv = (function() {
     return request.responseText;
   };
 
-  var toObjects = function(csv) {
-    var rows  = csv.split("\n");
+  var toObjects = function(data, url) {
+    var rows  = data.split("\n");
     var keys  = rows.shift().csvSplit();
     var types = rows.shift().csvSplit();
 
     var methods = [];
     for (var i = 0; i < types.length; i++) {
-      methods.push(parsers[types[i]]);
+      methods.push(parsers[types[i]] || parsers["relational"]);
     }
 
-    var array = [];
+    var data = [];
+    var map  = {};
+
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i].csvSplit(), object = {};
       for (var j = 0; j < keys.length; j++) {
-        object[keys[j]] = methods[j](row[j]);
+        object[keys[j]] = methods[j](row[j], types[j], url);
       }
-      array.push(object);
+      if (object.id) {
+        map[object.id] = object;
+      }
+      data.push(object);
     }
 
-    return array;
+    cache[url] = data;
+    maps[url]  = map;
+
+    return data;
   };
 
   return {
@@ -90,7 +115,7 @@ Csonv = (function() {
     },
     init : defineParsers,
     fetch: function(url) {
-      return toObjects(ajax(url));
+      return cache[url] || toObjects(ajax(url), url);
     }
   };
 }());
