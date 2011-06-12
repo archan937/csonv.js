@@ -94,19 +94,31 @@ Csonv = (function() {
   };
 }());
 
-String.prototype.fetch = function() {
-  return Csonv.fetch(this.toString()); };
+String.prototype.toData = function() {
+  return Csonv.fetch(this);
+};
 
-String.prototype.splitCsv = function(sep) {
-  for (var foo = this.split(sep = sep || Csonv.sep), x = foo.length - 1, tl; x >= 0; x--) {
-    if (foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) == '"') {
-      if ((tl = foo[x].replace(/^\s+"/, '"')).length > 1 && tl.charAt(0) == '"') {
-        foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
-      } else if (x) {
-        foo.splice(x - 1, 2, [foo[x - 1], foo[x]].join(sep));
-      } else foo = foo.shift().split(sep).concat(foo);
-    } else foo[x].replace(/""/g, '"');
-  } return foo; };
+String.prototype.csvSplit = function(s) {
+  s = s || Csonv.sep;
+
+  var reg_exp = new RegExp(("(\\" + s + '|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^"\\' + s + "\\r\\n]*))"), "gi");
+  var row = [], m = null;
+
+  if (this.match(new RegExp("^\\" + s))) {
+    row.push("");
+  }
+
+  while (m = reg_exp.exec(this)) {
+    var m1 = m[1];
+    if (m1.length && (m1 != s)) {
+      row.push(m1);
+    }
+    var value = m[2] ? m[2].replace(new RegExp('""', "g"), '"') : m[3];
+    row.push(value);
+  }
+
+  return row;
+};
 
 Csonv.init();
 
