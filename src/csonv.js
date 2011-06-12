@@ -16,12 +16,12 @@ Csonv = (function() {
 
   var defineParseMethods = function() {
     var arrayOf = function(type, values) {
-      var strings = values.splitCsv(",");
-      var result  = [];
+      var strings = values.csvSplit(",");
+      var array   = [];
       for (var i = 0; i < strings.length; i++) {
-        result.push(parseMethods[type](strings[i]));
+        array.push(parseMethods[type](strings[i]));
       }
-      return result;
+      return array;
     };
 
     parseMethods = {
@@ -66,37 +66,31 @@ Csonv = (function() {
 
   var csvToObjects = function(csv) {
     var rows  = csv.split("\n");
-    var keys  = rows.shift().splitCsv();
-    var types = rows.shift().splitCsv();
+    var keys  = rows.shift().csvSplit();
+    var types = rows.shift().csvSplit();
 
     var methods = [];
     for (var i = 0; i < types.length; i++) {
       methods.push(parseMethods[types[i]]);
     }
 
-    var result = [];
+    var array = [];
     for (var i = 0; i < rows.length; i++) {
-      var row    = rows[i].splitCsv();
-      var object = {};
+      var row = rows[i].csvSplit(), object = {};
       for (var j = 0; j < keys.length; j++) {
         object[keys[j]] = methods[j](row[j]);
       }
-      result.push(object);
+      array.push(object);
     }
 
-    return result;
+    return array;
   };
 
   return {
     version: "{version}",
-    sep: ";",
-    init: function() {
-      defineParseMethods();
-      if (typeof(onCsonvReady) == "function") {
-        onCsonvReady();
-      };
-    },
-    fetch: fetch
+    sep    : ";",
+    init   : defineParseMethods,
+    fetch  : fetch
   };
 }());
 
