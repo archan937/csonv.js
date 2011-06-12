@@ -4,7 +4,16 @@ A tiny library to fetch CSV data like JSON
 
 h2. Introduction
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Simplicity within web development is searching its way towards the client-side. With the power of Javascript, we are able to get further and further. A great example is "DocumentCloud's":http://twitter.com/#!/documentcloud "Backbone.js":http://documentcloud.github.com/backbone/ and "Alex MacCaw's":http://twitter.com/maccman "Spine":http://maccman.github.com/spine/. Not only do they provide a lot of great features, but they are also compact (3.9kb and 2K respectively when compressed) and it's installation (*including* the hosting system) is just a matter of copying the Javascript sources. So there is no need to install any server-side scripting software whatsoever.
+
+With keeping simplicity in mind, I have created csonv.js which serves CSV data like JSON. I have chosen CSV because it's very straightforward:
+
+* a file represents a certain entity (equivalent to database tables)
+* the CSV format is far less complex than the XML format
+* CSV files consists of columns and rows which resembles attributes and records respectively
+* there is no need to install extra software on the hosting server (unlike MySQL or SQLite databases)
+
+I am aware that there are a couple of cons regarding this setup. But as I am a passionate Ruby and Javascript programmer, I have build this for sake of fun and exploring side-steps like this one! ^^
 
 h2. Installation
 
@@ -18,7 +27,111 @@ Just include csonv.js:
 
 h2. Usage
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+h3. Providing the CSV data
+
+h4. Requirements
+
+Make sure you have hosted the CSV files on a public location. A CSV file has to satisfy the following:
+
+* the first row has to contain @keys@ - equivalent to attribute names
+* the second row has to describe the value @types@ - equivalent to data types
+* the following rows have to represent the @entries@ - equivalent to records
+
+The data types available are:
+
+* @string@ or an array of @strings@
+* @integer@ or an array of @integers@
+* @float@ or an array of @floats@
+* @boolean@ or an array of @booleans@ (options are: &lt;empty&gt;, @0@ or @1@)
+
+There are two separators which csonv.js handles:
+
+* @Csonv.separators.column@ (default: @";"@) - Used to separate columns
+* @Csonv.separators.array@ (default: @","@) - Used to separate array values
+
+h4. An example
+
+<pre>
+  id;first_name;last_name;given_names;is_parent
+  integer;string;string;strings;boolean
+  1;Dirk;Engel;Dirk,Julius;1
+  2;Anna;Engel;Anna,Octovina;1
+  3;Bram;Engel;Abraham,Theofilus;0
+  4;Paul;Engel;Paulus,Mathijs;
+</pre>
+
+h3. Fetching CSV as Javascript objects
+
+There are two ways to fetch CSV data as objects. Let's say you want to fetch all the family members from (the relative path) @assets/family.csv@:
+
+h4. Using String.toObjects()
+
+<pre>
+  <script>
+    var members = "assets/family.csv".toObjects();
+  </script>
+</pre>
+
+h4. Using Csonv.fetch(url)
+
+<pre>
+  <script>
+    var members = Csonv.fetch("assets/family.csv");
+  </script>
+</pre>
+
+h4. The resulted objects
+
+When running @JSON.stringify(members, null, 2)@, you get the following JSON string:
+
+<pre>
+[
+  {
+    "id": 1,
+    "first_name": "Dirk",
+    "last_name": "Engel",
+    "given_names": [
+      "Dirk",
+      "Julius"
+    ],
+    "is_parent": true
+  },
+  {
+    "id": 2,
+    "first_name": "Anna",
+    "last_name": "Engel",
+    "given_names": [
+      "Anna",
+      "Octovina"
+    ],
+    "is_parent": true
+  },
+  {
+    "id": 3,
+    "first_name": "Bram",
+    "last_name": "Engel",
+    "given_names": [
+      "Abraham",
+      "Theofilus"
+    ],
+    "is_parent": false
+  },
+  {
+    "id": 4,
+    "first_name": "Paul",
+    "last_name": "Engel",
+    "given_names": [
+      "Paulus",
+      "Mathijs"
+    ],
+    "is_parent": false
+  }
+]
+</pre>
+
+h2. Closing words
+
+Well that's about it! Doesn't using @csonv.js@ come close to simplicity? Have fun! ^^
 
 h2. Contact me
 
@@ -26,9 +139,9 @@ For support, remarks and requests please mail me at "paul.engel@holder.nl":mailt
 
 h2. Credit
 
-The *String.splitCsv()* function is written by Brian Huisman (GreyWyvern):
+The *String.csvSplit()* function is based on Ben Nadel's ("@bennadel":http://twitter.com/bennadel) blog post:
 
-"http://www.greywyvern.com":http://www.greywyvern.com - "The blog post":http://www.greywyvern.com/?post=258
+<a href="http://www.bennadel.com">http://www.bennadel.com</a>/"his-blog-post":http://www.bennadel.com/blog/1504-Ask-Ben-Parsing-CSV-Strings-With-Javascript-Exec-Regular-Expression-Command.htm
 
 h2. License
 
