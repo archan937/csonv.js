@@ -12,19 +12,19 @@ if (typeof(Csonv) == "undefined") {
 // *
 
 Csonv = (function() {
-  var parseMethods = null;
+  var parsers = null;
 
-  var defineParseMethods = function() {
-    var arrayOf = function(type, values) {
-      var strings = values.csvSplit(",");
+  var defineParsers = function() {
+    var n = function(type, values) {
+      var strings = values.csvSplit(Csonv.separators.array);
       var array   = [];
       for (var i = 0; i < strings.length; i++) {
-        array.push(parseMethods[type](strings[i]));
+        array.push(parsers[type](strings[i]));
       }
       return array;
     };
 
-    parseMethods = {
+    parsers = {
       "string": function(value) {
         return value.toString();
       },
@@ -38,22 +38,18 @@ Csonv = (function() {
         return parseInt(value, 10) == 1;
       },
       "strings": function(value) {
-        return arrayOf("string", value);
+        return n("string", value);
       },
       "integers": function(value) {
-        return arrayOf("integer", value);
+        return n("integer", value);
       },
       "floats": function(value) {
-        return arrayOf("float", value);
+        return n("float", value);
       },
       "booleans": function(value) {
-        return arrayOf("boolean", value);
+        return n("boolean", value);
       }
     };
-  };
-
-  var fetch = function(url) {
-    return csvToObjects(ajax(url));
   };
 
   var ajax = function(url) {
@@ -64,14 +60,14 @@ Csonv = (function() {
     return request.responseText;
   };
 
-  var csvToObjects = function(csv) {
+  var toObjects = function(csv) {
     var rows  = csv.split("\n");
     var keys  = rows.shift().csvSplit();
     var types = rows.shift().csvSplit();
 
     var methods = [];
     for (var i = 0; i < types.length; i++) {
-      methods.push(parseMethods[types[i]]);
+      methods.push(parsers[types[i]]);
     }
 
     var array = [];
@@ -88,27 +84,32 @@ Csonv = (function() {
 
   return {
     version: "{version}",
-    sep    : ";",
-    init   : defineParseMethods,
-    fetch  : fetch
+    separators: {
+      column: ";",
+      array : ","
+    },
+    init : defineParsers,
+    fetch: function(url) {
+      return toObjects(ajax(url));
+    }
   };
 }());
 
-String.prototype.toData = function() {
+String.prototype.toObjects = function() {
   return Csonv.fetch(this);
 };
 
 String.prototype.csvSplit = function(s) {
-  s = s || Csonv.sep;
+  s = s || Csonv.separators.column;
 
   var reg_exp = new RegExp(("(\\" + s + '|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^"\\' + s + "\\r\\n]*))"), "gi");
-  var row = [], m = null;
+  var str = this.trim(), row = [], m = null;
 
-  if (this.match(new RegExp("^\\" + s))) {
+  if (str.match(new RegExp("^\\" + s))) {
     row.push("");
   }
 
-  while (m = reg_exp.exec(this)) {
+  while (m = reg_exp.exec(str)) {
     var m1 = m[1];
     if (m1.length && (m1 != s)) {
       row.push(m1);
