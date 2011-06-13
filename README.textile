@@ -133,15 +133,15 @@ When running @JSON.stringify(members, null, 2)@, you will get the following JSON
 
 h3. Fetching relational data
 
-It is possible to fetch nested relational data with @csonv.js@. There are two types of relations: 1. has @one@ and 2. has @many@.
+It is possible to fetch nested relational data with @csonv.js@. There are two types of relations: 1. has one and 2. has many.
 
 Now let's say that you have @books.csv@ and @authors.csv@ and you want to get all the books with their authors. Here is what you do:
 
-The data type is specified as follows: &lt;relative path to related CSV file&gt;:&lt;cardinality&gt; of which cardinality can be either @one@ or @many@. For example:
+The data type is specified as follows: &lt;relative path to related CSV file&gt;:&lt;cardinality&gt; of which cardinality can be either @1@ or @n@. For example:
 
 <pre>
   id;name;favorite_book;books_read
-  integer;string;favorites/books:one;favorites/books:many
+  integer;string;favorites/books:1;favorites/books:n
   2;Anna Engel;2;1,2,5
 </pre>
 
@@ -149,7 +149,7 @@ h4. books.csv
 
 <pre>
   id;name;author
-  integer;string;authors:one
+  integer;string;authors:1
   1;To Kill an Angry Bird;1
   2;The Rabbit;2
   3;Parslet;3

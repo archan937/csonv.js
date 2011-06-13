@@ -1,5 +1,5 @@
 id;name;author
-integer;string;authors:one
+integer;string;authors:1
 1;To Kill an Angry Bird;1
 2;The Rabbit;2
 3;Parslet;3

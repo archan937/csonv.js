@@ -64,7 +64,7 @@ Csonv = (function() {
           }
         }
 
-        return assoc[1] == "one" ? array[0] || null : array;
+        return parseInt(assoc[1], 10) == 1 ? array[0] || null : array;
       }
     };
   };
