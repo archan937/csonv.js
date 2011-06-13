@@ -136,8 +136,17 @@ Csonv = (function() {
   };
 }());
 
-String.prototype.toObjects = function(exclude) {
-  return Csonv.fetch(this, exclude);
+Array.indexOf || (Array.prototype.indexOf = function(v) {
+  for (var i = this.length; i-- && this[i] != v;);
+  return i;
+});
+
+String.trim || (String.prototype.trim = function() {
+  return this.replace(/^\s+|\s+$/g, "");
+});
+
+String.prototype.toObjects = function(x) {
+  return Csonv.fetch(this, x);
 };
 
 String.prototype.csvSplit = function(s) {

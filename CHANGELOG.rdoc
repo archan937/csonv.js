@@ -2,6 +2,7 @@
 
 == Version 0.1.2 (June xx, 2011)
 
+* Added IE compatibility (defining Array.indexOf and String.trim when missing)
 * Being able to fetch relational data both ways (yes!)
 * Refactored cache implementation
 * Using '1' and 'n' instead of 'one' and 'many' respectively for association cardinality
