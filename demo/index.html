@@ -9,7 +9,9 @@
     <script src="../src/csonv.js"  type="text/javascript"></script>
     <script>
       function fetch() {
-        var data      = "assets/family.csv".toObjects();
+        var select    = document.getElementById("csv");
+        var csv       = select.options[select.selectedIndex].value;
+        var data      = csv.toObjects();
         var indention = "    ";
         var result    = JSON.stringify(data, null, indention.length).replace(/\[\{/, "[\n" + indention + "{");
         document.getElementById("result").innerHTML = result;
@@ -26,6 +28,12 @@
         </div>
         <div id="page_content">
           <a href="#" onclick="fetch()">Click to fetch!</a>
+          <br>
+          <select id="csv">
+            <option value="assets/family.csv">family.csv</option>
+            <option value="assets/favorites/books.csv">books.csv</option>
+            <option value="assets/favorites/authors.csv">authors.csv</option>
+          </select>
           <pre id="result">
             <!-- result -->
           </pre>
