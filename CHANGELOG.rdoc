@@ -2,6 +2,7 @@
 
 == Version 0.1.2 (June xx, 2011)
 
+* Not caching fetched data at default anymore
 * Added IE compatibility (defining Array.indexOf and String.trim when missing)
 * Being able to fetch relational data both ways (yes!)
 * Refactored cache implementation

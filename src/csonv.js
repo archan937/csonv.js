@@ -55,7 +55,7 @@ Csonv = (function() {
         var assoc_url = url.replace(/\w+\.csv$/, assoc[0] + ".csv")
         var array     = [];
 
-        assoc_url.toObjects(assoc[2]);
+        assoc_url.toObjects(assoc[2], true);
         var map = cache[assoc_url].map;
 
         if (assoc[2]) {
@@ -130,7 +130,10 @@ Csonv = (function() {
       array : ","
     },
     init : defineParsers,
-    fetch: function(url, exclude) {
+    fetch: function(url, exclude, cache) {
+      if (!cache) {
+        cache = {};
+      }
       return cache[url] ? cache[url].data : toObjects(ajax(url), url, exclude);
     }
   };
@@ -145,8 +148,8 @@ String.trim || (String.prototype.trim = function() {
   return this.replace(/^\s+|\s+$/g, "");
 });
 
-String.prototype.toObjects = function(x) {
-  return Csonv.fetch(this, x);
+String.prototype.toObjects = function(exclude, cache) {
+  return Csonv.fetch(this, exclude, cache);
 };
 
 String.prototype.csvSplit = function(s) {
