@@ -2,6 +2,8 @@
 
 == Version 0.1.2 (June xx, 2011)
 
+* Being able to fetch relational data both ways (yes!)
+* Refactored cache implementation
 * Using '1' and 'n' instead of 'one' and 'many' respectively for association cardinality
 
 == Version 0.1.1 (June 12, 2011)

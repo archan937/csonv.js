@@ -12,7 +12,7 @@ if (typeof(Csonv) == "undefined") {
 // *
 
 Csonv = (function() {
-  var parsers = null, cache = {}, maps = {};
+  var parsers = null, cache = {};
 
   var defineParsers = function() {
     var n = function(type, values) {
@@ -49,18 +49,28 @@ Csonv = (function() {
       "booleans": function(value) {
         return n("boolean", value);
       },
-      "relational": function(values, type, url) {
+      "relational": function(values, type, url, id) {
         var ids       = values.split(Csonv.separators.array);
         var assoc     = type.split(":");
         var assoc_url = url.replace(/\w+\.csv$/, assoc[0] + ".csv")
         var array     = [];
 
-        assoc_url.toObjects();
+        assoc_url.toObjects(assoc[2]);
+        var map = cache[assoc_url].map;
 
-        for (var i = 0; i < ids.length; i++) {
-          var object = maps[assoc_url][parseInt(ids[i], 10)];
-          if (object) {
-            array.push(object);
+        if (assoc[2]) {
+          for (var key in map) {
+            var object_map = map[key];
+            if (object_map[assoc[2]].indexOf(id.toString()) != -1) {
+              array.push(object_map._object);
+            }
+          }
+        } else {
+          for (var i = 0; i < ids.length; i++) {
+            var object_map = map[parseInt(ids[i], 10)];
+            if (object_map) {
+              array.push(object_map._object);
+            }
           }
         }
 
@@ -77,32 +87,38 @@ Csonv = (function() {
     return request.responseText;
   };
 
-  var toObjects = function(data, url) {
+  var toObjects = function(data, url, exclude) {
     var rows  = data.split("\n");
     var keys  = rows.shift().csvSplit();
     var types = rows.shift().csvSplit();
-
-    var methods = [];
-    for (var i = 0; i < types.length; i++) {
-      methods.push(parsers[types[i]] || parsers["relational"]);
-    }
-
-    var data = [];
-    var map  = {};
+    var data  = [], map = {};
 
     for (var i = 0; i < rows.length; i++) {
-      var row = rows[i].csvSplit(), object = {};
+      var row = rows[i].csvSplit(), object = {}, object_map = {};
       for (var j = 0; j < keys.length; j++) {
-        object[keys[j]] = methods[j](row[j], types[j], url);
+        var key = keys[j], parser = parsers[type = types[j]];
+
+        if (parser) {
+          object[key] = parser(row[j], type, url, object.id);
+        } else {
+          object_map[key] = type.split(":").length == 2 ? row[j].split(Csonv.separators.array) : null;
+          if (exclude != key) {
+            object[key] = parsers["relational"](row[j], type, url, object.id);
+          }
+        }
+
       }
       if (object.id) {
-        map[object.id] = object;
+        object_map._object = object;
+        map[object.id]     = object_map;
       }
       data.push(object);
     }
 
-    cache[url] = data;
-    maps[url]  = map;
+    cache[url] = {
+      data: data,
+      map : map
+    };
 
     return data;
   };
@@ -114,14 +130,14 @@ Csonv = (function() {
       array : ","
     },
     init : defineParsers,
-    fetch: function(url) {
-      return cache[url] || toObjects(ajax(url), url);
+    fetch: function(url, exclude) {
+      return cache[url] ? cache[url].data : toObjects(ajax(url), url, exclude);
     }
   };
 }());
 
-String.prototype.toObjects = function() {
-  return Csonv.fetch(this);
+String.prototype.toObjects = function(exclude) {
+  return Csonv.fetch(this, exclude);
 };
 
 String.prototype.csvSplit = function(s) {
