@@ -79,6 +79,15 @@ Csonv = (function() {
     };
   };
 
+  var resolvePath = function(url, relative) {
+    url = url.replace(/[^\/]+\/?$/, "") + relative;
+    reg_exp = new RegExp(/[^\/]+\/\.\.\/?/);
+    while (url.match(reg_exp)) {
+      url = url.replace(reg_exp, "");
+    }
+    return url;
+  };
+
   var ajax = function(url) {
     request = new(window.ActiveXObject || XMLHttpRequest)("Microsoft.XMLHTTP");
     request.open("GET", url, 0);
