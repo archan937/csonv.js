@@ -1,4 +1,4 @@
-id;name;books
+id;name;written_books
 integer;string;books:n:author
 1;Harper Lee;
 2;JRR Tolkien;
