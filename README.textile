@@ -236,7 +236,7 @@ h4. books.csv
 h4. authors.csv
 
 <pre>
-  id;name;books
+  id;name;written_books
   integer;string;books:n:author
   1;Harper Lee;
   2;JRR Tolkien;
@@ -251,7 +251,7 @@ The resulting @authors.csv@ data will look like this:
   {
     "id": 1,
     "name": "Harper Lee",
-    "books": [
+    "written_books": [
       {
         "id": 1,
         "name": "To Kill an Angry Bird"
@@ -261,7 +261,7 @@ The resulting @authors.csv@ data will look like this:
   {
     "id": 2,
     "name": "JRR Tolkien",
-    "books": [
+    "written_books": [
       {
         "id": 2,
         "name": "The Rabbit"
@@ -275,7 +275,7 @@ The resulting @authors.csv@ data will look like this:
   {
     "id": 3,
     "name": "William Shakespeare",
-    "books": [
+    "written_books": [
       {
         "id": 3,
         "name": "Parslet"
@@ -285,7 +285,7 @@ The resulting @authors.csv@ data will look like this:
   {
     "id": 4,
     "name": "Dan Brown",
-    "books": [
+    "written_books": [
       {
         "id": 5,
         "name": "The Michelangelo Code"
