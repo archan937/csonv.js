@@ -1,18 +1,18 @@
 if (typeof(Csonv) == "undefined") {
 
 // *
-// * csonv.js 0.1.1 (Uncompressed)
-// * A tiny library to fetch relational CSV data like JSON
+// * csonv.js 0.1.2 (Uncompressed)
+// * A tiny library to fetch relational CSV data at client-side just like JSON
 // *
 // * (c) 2011 Paul Engel (Internetbureau Holder B.V.)
 // * Except otherwise noted, csonv.js is licensed under
 // * http://creativecommons.org/licenses/by-sa/3.0
 // *
-// * $Date: 2011-06-12 17:26:13 +0100 (Sun, 12 June 2011) $
+// * $Date: 2011-06-15 01:28:43 +0100 (Wed, 15 June 2011) $
 // *
 
 Csonv = (function() {
-  var parsers = null, cache = {}, maps = {};
+  var parsers = null, cache = {};
 
   var defineParsers = function() {
     var n = function(type, values) {
@@ -49,24 +49,42 @@ Csonv = (function() {
       "booleans": function(value) {
         return n("boolean", value);
       },
-      "relational": function(values, type, url) {
-        var ids       = values.split(Csonv.separators.array);
+      "relation": function(ids, type, url, id) {
         var assoc     = type.split(":");
-        var assoc_url = url.replace(/\w+\.csv$/, assoc[0] + ".csv")
+        var assoc_url = resolvePath(url, type.split(":")[0] + ".csv");
         var array     = [];
 
         assoc_url.toObjects();
+        var map = cache[assoc_url].map;
 
-        for (var i = 0; i < ids.length; i++) {
-          var object = maps[assoc_url][parseInt(ids[i], 10)];
-          if (object) {
-            array.push(object);
+        if (assoc[2]) {
+          for (var key in map) {
+            var object_map = map[key];
+            if ((object_map[assoc[2]] || []).indexOf(id.toString()) != -1) {
+              array.push(object_map._object);
+            }
+          }
+        } else {
+          for (var i = 0; i < ids.length; i++) {
+            var object_map = map[parseInt(ids[i], 10)];
+            if (object_map) {
+              array.push(object_map._object);
+            }
           }
         }
 
-        return assoc[1] == "one" ? array[0] || null : array;
+        return parseInt(assoc[1], 10) == 1 ? array[0] || null : array;
       }
     };
+  };
+
+  var resolvePath = function(url, relative) {
+    url = url.replace(/[^\/]+\/?$/, "") + relative;
+    reg_exp = new RegExp(/[^\/]+\/\.\.\/?/);
+    while (url.match(reg_exp)) {
+      url = url.replace(reg_exp, "");
+    }
+    return url;
   };
 
   var ajax = function(url) {
@@ -78,50 +96,73 @@ Csonv = (function() {
   };
 
   var toObjects = function(data, url) {
-    var rows  = data.split("\n");
-    var keys  = rows.shift().csvSplit();
-    var types = rows.shift().csvSplit();
+    cache[url] = {
+      data: [],
+      map : {}
+    };
 
-    var methods = [];
-    for (var i = 0; i < types.length; i++) {
-      methods.push(parsers[types[i]] || parsers["relational"]);
-    }
-
-    var data = [];
-    var map  = {};
+    var $      = cache[url];
+    var rows   = data.split("\n");
+    var keys   = rows.shift().csvSplit();
+    var types  = rows.shift().csvSplit();
 
     for (var i = 0; i < rows.length; i++) {
-      var row = rows[i].csvSplit(), object = {};
+      var row = rows[i].csvSplit(), object = {}, object_map = {};
+
       for (var j = 0; j < keys.length; j++) {
-        object[keys[j]] = methods[j](row[j], types[j], url);
+        var key = keys[j], type = types[j], parser = parsers[type];
+
+        if (parser) {
+          object[key] = parser(row[j], type, url);
+        } else {
+          object_map[key] = type.split(":").length == 2 ? row[j].split(Csonv.separators.array) : null;
+        }
+
       }
       if (object.id) {
-        map[object.id] = object;
+        object_map._object = object;
+        $.map[object.id]   = object_map;
       }
-      data.push(object);
+      $.data.push(object);
     }
 
-    cache[url] = data;
-    maps[url]  = map;
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i], type = types[i], parser = parsers[type];
 
-    return data;
+      if (!parser) {
+        for (var j = 0; j < $.data.length; j++) {
+          $.data[j][key] = parsers["relation"]($.map[$.data[j].id][key], type, url, $.data[j].id);
+        }
+      }
+    }
+
+    return $.data;
   };
 
   return {
-    version: "0.1.1",
+    version: "0.1.2",
     separators: {
       column: ";",
       array : ","
     },
     init : defineParsers,
     fetch: function(url) {
-      return cache[url] || toObjects(ajax(url), url);
+      return cache[url] ? cache[url].data : toObjects(ajax(url), url);
     }
   };
 }());
 
+Array.indexOf || (Array.prototype.indexOf = function(v) {
+  for (var i = this.length; i-- && this[i] != v;);
+  return i;
+});
+
+String.trim || (String.prototype.trim = function() {
+  return this.replace(/^\s+|\s+$/g, "");
+});
+
 String.prototype.toObjects = function() {
-  return Csonv.fetch(this);
+  return Csonv.fetch(this.toString());
 };
 
 String.prototype.csvSplit = function(s) {

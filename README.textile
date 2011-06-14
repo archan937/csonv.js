@@ -1,6 +1,6 @@
 h1. csonv.js
 
-A tiny library to fetch relational CSV data like JSON
+A tiny library to fetch relational CSV data at client-side just like JSON
 
 h2. Introduction
 
@@ -133,15 +133,17 @@ When running @JSON.stringify(members, null, 2)@, you will get the following JSON
 
 h3. Fetching relational data
 
-It is possible to fetch nested relational data with @csonv.js@. There are two types of relations: 1. has @one@ and 2. has @many@.
+It is possible to fetch nested relational data with @csonv.js@. There are two types of relations: 1. has one and 2. has many.
 
 Now let's say that you have @books.csv@ and @authors.csv@ and you want to get all the books with their authors. Here is what you do:
 
-The data type is specified as follows: &lt;relative path to related CSV file&gt;:&lt;cardinality&gt; of which cardinality can be either @one@ or @many@. For example:
+The data type is specified as follows: @<relative path to related CSV file>@*:*@<cardinality>@ of which cardinality can be either @1@ or @n@.
+
+For example:
 
 <pre>
   id;name;favorite_book;books_read
-  integer;string;favorites/books:one;favorites/books:many
+  integer;string;favorites/books:1;favorites/books:n
   2;Anna Engel;2;1,2,5
 </pre>
 
@@ -149,7 +151,7 @@ h4. books.csv
 
 <pre>
   id;name;author
-  integer;string;authors:one
+  integer;string;authors:1
   1;To Kill an Angry Bird;1
   2;The Rabbit;2
   3;Parslet;3
@@ -168,7 +170,7 @@ h4. authors.csv
   4;Dan Brown
 </pre>
 
-The resulting data will look like this:
+The resulting @books.csv@ data will look like this:
 
 <pre>
 [
@@ -215,11 +217,87 @@ The resulting data will look like this:
 ]
 </pre>
 
+h3. Fetching relational data from the opposite direction
+
+As of version 0.1.2 it is possible to fetch relational data of which the foreign keys are defined within the related association. The data type has to be specified as follows: @<relative path to related CSV file>@*:*@<cardinality>@*:*@<inverse type>@ of which the inverse type is the inverse association that holds the foreign keys. As the foreign keys are defined elsewhere, you can leave column values blank. For instance:
+
+h4. books.csv
+
+<pre>
+  id;name;author
+  integer;string;authors:1
+  1;To Kill an Angry Bird;1
+  2;The Rabbit;2
+  3;Parslet;3
+  4;The Lord of the Things;2
+  5;The Michelangelo Code;4
+</pre>
+
+h4. authors.csv
+
+<pre>
+  id;name;written_books
+  integer;string;books:n:author
+  1;Harper Lee;
+  2;JRR Tolkien;
+  3;William Shakespeare;
+  4;Dan Brown;
+</pre>
+
+The resulting @authors.csv@ data will look like this:
+
+<pre>
+[
+  {
+    "id": 1,
+    "name": "Harper Lee",
+    "written_books": [
+      {
+        "id": 1,
+        "name": "To Kill an Angry Bird"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "JRR Tolkien",
+    "written_books": [
+      {
+        "id": 2,
+        "name": "The Rabbit"
+      },
+      {
+        "id": 4,
+        "name": "The Lord of the Things"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "William Shakespeare",
+    "written_books": [
+      {
+        "id": 3,
+        "name": "Parslet"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Dan Brown",
+    "written_books": [
+      {
+        "id": 5,
+        "name": "The Michelangelo Code"
+      }
+    ]
+  }
+]
+</pre>
+
 For a more complex result, please take a look at "http://archan937.github.com/csonv.js":http://archan937.github.com/csonv.js for a live demo.
 
 h2. Closing words
-
-At the moment, fetching relational data is a one-way street. But that will be corrected in the following release.
 
 Well that's about it! Doesn't using @csonv.js@ represent simplicity? Have fun! ^^
 
