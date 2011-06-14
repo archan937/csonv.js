@@ -1,14 +1,14 @@
 if (typeof(Csonv) == "undefined") {
 
 // *
-// * csonv.js {version} (Uncompressed)
+// * csonv.js 0.1.2 (Uncompressed)
 // * A tiny library to fetch relational CSV data at client-side just like JSON
 // *
-// * (c) {year} Paul Engel (Internetbureau Holder B.V.)
+// * (c) 2011 Paul Engel (Internetbureau Holder B.V.)
 // * Except otherwise noted, csonv.js is licensed under
 // * http://creativecommons.org/licenses/by-sa/3.0
 // *
-// * $Date: {date} $
+// * $Date: 2011-06-15 01:28:43 +0100 (Wed, 15 June 2011) $
 // *
 
 Csonv = (function() {
@@ -140,7 +140,7 @@ Csonv = (function() {
   };
 
   return {
-    version: "{version}",
+    version: "0.1.2",
     separators: {
       column: ";",
       array : ","
