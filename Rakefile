@@ -22,6 +22,7 @@ task :release, :version do |task, args|
   # Define variables
   releases_dir = "releases"
   release_dir  = "#{releases_dir}/#{args[:version]}"
+  latest_dir   = "#{releases_dir}/latest"
 
   # Create directories
   FileUtils.rm_r(release_dir) if File.exists?(release_dir)
@@ -34,4 +35,8 @@ task :release, :version do |task, args|
 
   # Compress release using YUI compressor
   IO.popen "java -jar lib/yuicompressor-2.4.2.jar -v #{release_dir}/csonv.js -o #{release_dir}/csonv.min.js"
+
+  # Update latest release dir
+  FileUtils.rm_r(latest_dir) if File.exists?(latest_dir)
+  FileUtils.cp_r("#{release_dir}/.", latest_dir)
 end

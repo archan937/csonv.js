@@ -1,0 +1,324 @@
+h1. csonv.js
+
+A tiny library to fetch relational CSV data like JSON
+
+h2. Introduction
+
+Simplicity within web development is searching its way towards the client-side. With the power of Javascript, we are able to get further and further. A great example is "DocumentCloud's":http://twitter.com/#!/documentcloud "Backbone.js":http://documentcloud.github.com/backbone/ and "Alex MacCaw's":http://twitter.com/maccman "Spine":http://maccman.github.com/spine/. Not only do they provide a lot of great features, but they are also compact (3.9kb and 2K respectively when compressed) and it's installation (*including* the hosting system) is just a matter of copying the Javascript sources. So there is no need to install any server-side scripting software whatsoever.
+
+With keeping simplicity in mind, I have created csonv.js which serves CSV data like JSON. I have chosen CSV because it's very straightforward:
+
+* a file represents a certain entity (equivalent to database tables)
+* the CSV format is far less complex than the XML format
+* CSV files consists of columns and rows which resembles attributes and records respectively
+* there is no need to install extra software on the hosting server (unlike MySQL or SQLite databases)
+
+Please note that it is also possible to nest relational data within the resulting objects as if you are joining SQL tables.
+
+I am aware that there are a couple of cons regarding this setup. But as I am a passionate Ruby and Javascript programmer, I have build this for sake of fun and exploring side-steps like this one! ^^
+
+h2. Installation
+
+Just include csonv.js:
+
+<pre>
+  <script src="path/to/csonv.js" type="text/javascript"></script>
+</pre>
+
+*Note*: include @csonv.min.js@ for the minified csonv.js library
+
+h2. Usage
+
+h3. Providing the CSV data
+
+h4. Requirements
+
+Make sure you have hosted the CSV files on a public location. A CSV file has to satisfy the following:
+
+* the first row has to contain @keys@ - equivalent to attribute names
+* the second row has to describe the value @types@ - equivalent to data types
+* the following rows have to represent the @entries@ - equivalent to records
+
+The data types available are:
+
+* @string@ or an array of @strings@
+* @integer@ or an array of @integers@
+* @float@ or an array of @floats@
+* @boolean@ or an array of @booleans@ (options are: &lt;empty&gt;, @0@ or @1@)
+
+There are two separators which csonv.js handles:
+
+* @Csonv.separators.column@ (default: @";"@) - Used to separate columns
+* @Csonv.separators.array@ (default: @","@) - Used to separate array values
+
+h4. An example
+
+<pre>
+  id;first_name;last_name;given_names;is_parent
+  integer;string;string;strings;boolean
+  1;Dirk;Engel;Dirk,Julius;1
+  2;Anna;Engel;Anna,Octovina;1
+  3;Bram;Engel;Abraham,Theofilus;0
+  4;Paul;Engel;Paulus,Mathijs;
+</pre>
+
+h3. Fetching CSV as Javascript objects
+
+There are two ways to fetch CSV data as objects. Let's say you want to fetch all the family members from (the relative path) @assets/family.csv@:
+
+h4. Using String.toObjects()
+
+<pre>
+  <script>
+    var members = "assets/family.csv".toObjects();
+  </script>
+</pre>
+
+h4. Using Csonv.fetch(url)
+
+<pre>
+  <script>
+    var members = Csonv.fetch("assets/family.csv");
+  </script>
+</pre>
+
+h4. The resulted objects
+
+When running @JSON.stringify(members, null, 2)@, you will get the following JSON string:
+
+<pre>
+[
+  {
+    "id": 1,
+    "first_name": "Dirk",
+    "last_name": "Engel",
+    "given_names": [
+      "Dirk",
+      "Julius"
+    ],
+    "is_parent": true
+  },
+  {
+    "id": 2,
+    "first_name": "Anna",
+    "last_name": "Engel",
+    "given_names": [
+      "Anna",
+      "Octovina"
+    ],
+    "is_parent": true
+  },
+  {
+    "id": 3,
+    "first_name": "Bram",
+    "last_name": "Engel",
+    "given_names": [
+      "Abraham",
+      "Theofilus"
+    ],
+    "is_parent": false
+  },
+  {
+    "id": 4,
+    "first_name": "Paul",
+    "last_name": "Engel",
+    "given_names": [
+      "Paulus",
+      "Mathijs"
+    ],
+    "is_parent": false
+  }
+]
+</pre>
+
+h3. Fetching relational data
+
+It is possible to fetch nested relational data with @csonv.js@. There are two types of relations: 1. has one and 2. has many.
+
+Now let's say that you have @books.csv@ and @authors.csv@ and you want to get all the books with their authors. Here is what you do:
+
+The data type is specified as follows: @<relative path to related CSV file>@*:*@<cardinality>@ of which cardinality can be either @1@ or @n@.
+
+For example:
+
+<pre>
+  id;name;favorite_book;books_read
+  integer;string;favorites/books:1;favorites/books:n
+  2;Anna Engel;2;1,2,5
+</pre>
+
+h4. books.csv
+
+<pre>
+  id;name;author
+  integer;string;authors:1
+  1;To Kill an Angry Bird;1
+  2;The Rabbit;2
+  3;Parslet;3
+  4;The Lord of the Things;2
+  5;The Michelangelo Code;4
+</pre>
+
+h4. authors.csv
+
+<pre>
+  id;name
+  integer;string
+  1;Harper Lee
+  2;JRR Tolkien
+  3;William Shakespeare
+  4;Dan Brown
+</pre>
+
+The resulting @books.csv@ data will look like this:
+
+<pre>
+[
+  {
+    "id": 1,
+    "name": "To Kill an Angry Bird",
+    "author": {
+      "id": 1,
+      "name": "Harper Lee"
+    }
+  },
+  {
+    "id": 2,
+    "name": "The Rabbit",
+    "author": {
+      "id": 2,
+      "name": "JRR Tolkien"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Parslet",
+    "author": {
+      "id": 3,
+      "name": "William Shakespeare"
+    }
+  },
+  {
+    "id": 4,
+    "name": "The Lord of the Things",
+    "author": {
+      "id": 2,
+      "name": "JRR Tolkien"
+    }
+  },
+  {
+    "id": 5,
+    "name": "The Michelangelo Code",
+    "author": {
+      "id": 4,
+      "name": "Dan Brown"
+    }
+  }
+]
+</pre>
+
+h3. Fetching relational data from the opposite direction
+
+As of version 0.1.2 it is possible to fetch relational data of which the foreign keys are defined within the related association. The data type has to be specified as follows: @<relative path to related CSV file>@*:*@<cardinality>@*:*@<inverse type>@ of which the inverse type is the inverse association that holds the foreign keys. As the foreign keys are defined elsewhere, you can leave column values blank. For instance:
+
+h4. books.csv
+
+<pre>
+  id;name;author
+  integer;string;authors:1
+  1;To Kill an Angry Bird;1
+  2;The Rabbit;2
+  3;Parslet;3
+  4;The Lord of the Things;2
+  5;The Michelangelo Code;4
+</pre>
+
+h4. authors.csv
+
+<pre>
+  id;name;written_books
+  integer;string;books:n:author
+  1;Harper Lee;
+  2;JRR Tolkien;
+  3;William Shakespeare;
+  4;Dan Brown;
+</pre>
+
+The resulting @authors.csv@ data will look like this:
+
+<pre>
+[
+  {
+    "id": 1,
+    "name": "Harper Lee",
+    "written_books": [
+      {
+        "id": 1,
+        "name": "To Kill an Angry Bird"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "JRR Tolkien",
+    "written_books": [
+      {
+        "id": 2,
+        "name": "The Rabbit"
+      },
+      {
+        "id": 4,
+        "name": "The Lord of the Things"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "William Shakespeare",
+    "written_books": [
+      {
+        "id": 3,
+        "name": "Parslet"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Dan Brown",
+    "written_books": [
+      {
+        "id": 5,
+        "name": "The Michelangelo Code"
+      }
+    ]
+  }
+]
+</pre>
+
+For a more complex result, please take a look at "http://archan937.github.com/csonv.js":http://archan937.github.com/csonv.js for a live demo.
+
+h2. Closing words
+
+Well that's about it! Doesn't using @csonv.js@ represent simplicity? Have fun! ^^
+
+h2. Contact me
+
+For support, remarks and requests please mail me at "paul.engel@holder.nl":mailto:paul.engel@holder.nl.
+
+h2. Credit
+
+The *String.csvSplit()* function is based on Ben Nadel's ("@bennadel":http://twitter.com/bennadel) blog post:
+
+"http://www.bennadel.com":http://www.bennadel.com / "his-blog-post":http://www.bennadel.com/blog/1504-Ask-Ben-Parsing-CSV-Strings-With-Javascript-Exec-Regular-Expression-Command.htm
+
+h2. License
+
+Copyright (c) 2011 Paul Engel, released under the MIT license
+
+"http://holder.nl":http://holder.nl – "http://github.com/archan937":http://github.com/archan937 – "http://codehero.es":http://codehero.es – "http://gettopup.com":http://gettopup.com – "http://twitter.com/archan937":http://twitter.com/archan937 – "paul.engel@holder.nl":mailto:paul.engel@holder.nl
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
