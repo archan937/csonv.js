@@ -1,6 +1,6 @@
 h1. csonv.js
 
-A tiny library to fetch relational CSV data like JSON
+A tiny library to fetch relational CSV data at client-side just like JSON
 
 h2. Introduction
 

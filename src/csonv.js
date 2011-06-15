@@ -2,7 +2,7 @@ if (typeof(Csonv) == "undefined") {
 
 // *
 // * csonv.js {version} (Uncompressed)
-// * A tiny library to fetch relational CSV data like JSON
+// * A tiny library to fetch relational CSV data at client-side just like JSON
 // *
 // * (c) {year} Paul Engel (Internetbureau Holder B.V.)
 // * Except otherwise noted, csonv.js is licensed under
