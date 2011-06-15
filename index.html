@@ -15,7 +15,7 @@
         var csv       = select.options[select.selectedIndex].value;
         var data      = csv.toObjects();
         var indention = "    ";
-        var result    = JSON.stringify(JSON.decycle(data), null, indention.length).replace(/\[\{/, "[\n" + indention + "{");
+        var result    = JSON.stringify(JSON.decycle(data), null, indention.length).replace(/\[\{/, "[\n" + indention + "{").replace(/\n/g, "<br>").replace(/\s/g, "&nbsp;");
         document.getElementById("result").innerHTML = result;
       }
     </script>
@@ -24,7 +24,9 @@
     <div id="page">
       <div id="page_wrapper">
         <div id="page_header">
-          <h1>csonv.js</h1>
+          <h1>
+            <a href="https://github.com/archan937/csonv.js">csonv.js</a>
+          </h1>
           <h2>A tiny library to fetch relational CSV data at client-side just like JSON</h2>
         </div>
         <ul id="page_menu">
@@ -61,5 +63,11 @@
         </div>
       </div>
     </div>
+        <div id="page_footer">
+          made by
+          <a href="mailto:paul.engel@holder.nl">Paul Engel</a>
+          <span class="separator">-</span>
+          <a href="http://holder.nl">Internetbureau Holder B.V.</a>
+        </div>
   </body>
 </html>

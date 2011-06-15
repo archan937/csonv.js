@@ -55,18 +55,24 @@ a {
 
 #page_wrapper {
   width: 920px;
-  margin: auto;
-  padding-bottom: 50px; }
+  margin: auto; }
 
 #page_header {
+  padding-top: 110px;
+  padding-bottom: 65px;
   text-align: center; }
   #page_header h1 {
-    margin-top: 110px;
+    padding-bottom: 1px;
     font-size: 65px;
     letter-spacing: -4px;
     line-height: 1; }
+    #page_header h1 a {
+      padding: 0 7px 0 3px; }
+    #page_header h1 a:hover {
+      color: #EEE;
+      text-shadow: 0 0;
+      background: #262626; }
   #page_header h2 {
-    margin-bottom: 65px;
     font-size: 18px; }
 
 #page_menu {
@@ -84,8 +90,30 @@ a {
       border-bottom: 1px solid #333; }
 
 #page_content {
-  margin-top: 90px;
+  padding-top: 90px;
+  padding-bottom: 175px;
   text-align: center; }
   #page_content a {
     font-size: 19px;
     font-weight: bold; }
+
+#page_footer {
+  height: 100px;
+  margin-top: -110px;
+  padding-top: 10px;
+  font-size: 11px;
+  text-align: center;
+  letter-spacing: -0.1px;
+  position: relative;
+  background: url(bg.gif) repeat-x top; }
+  #page_footer a {
+    border: 0;
+    padding-bottom: 2px; }
+  #page_footer a:hover {
+    border-bottom: 1px dotted #333; }
+  #page_footer span.separator {
+    padding: 0 8px;
+    display: -moz-inline-block;
+    display: inline-block;
+    *display: inline;
+    zoom: 1; }
