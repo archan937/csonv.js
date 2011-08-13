@@ -11,7 +11,7 @@ if (typeof(Csonv) == "undefined") {
 // * $Date: {date} $
 // *
 
-Csonv = (function() {
+Csonv = (function(undefined) {
   var parsers = null, cache = {};
 
   var defineParsers = function() {
@@ -101,10 +101,10 @@ Csonv = (function() {
       map : {}
     };
 
-    var $      = cache[url];
-    var rows   = data.split("\n");
-    var keys   = rows.shift().csvSplit();
-    var types  = rows.shift().csvSplit();
+    var $     = cache[url];
+    var rows  = data.split("\n");
+    var keys  = rows.shift().csvSplit();
+    var types = rows.shift().csvSplit();
 
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i].csvSplit(), object = {}, object_map = {};
@@ -117,8 +117,8 @@ Csonv = (function() {
         } else {
           object_map[key] = type.split(":").length == 2 ? row[j].split(Csonv.separators.array) : null;
         }
-
       }
+
       if (object.id) {
         object_map._object = object;
         $.map[object.id]   = object_map;
