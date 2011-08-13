@@ -51,7 +51,7 @@ Csonv = (function() {
       },
       "relation": function(ids, type, url, id) {
         var assoc     = type.split(":");
-        var assoc_url = resolvePath(url, type.split(":")[0] + ".csv");
+        var assoc_url = resolvePath(url, assoc[0] + ".csv");
         var array     = [];
 
         assoc_url.toObjects();

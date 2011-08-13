@@ -15,7 +15,7 @@ With keeping simplicity in mind, I have created csonv.js which serves CSV data l
 
 Please note that it is also possible to nest relational data within the resulting objects as if you are joining SQL tables.
 
-I am aware that there are a couple of cons regarding this setup. But as I am a passionate Ruby and Javascript programmer, I have build this for sake of fun and exploring side-steps like this one! ^^
+I am aware that there are a couple of cons regarding this setup. But as I am a passionate Ruby and Javascript programmer, I have build csonv.js for the sake of fun and exploring side-steps like this one! ^^
 
 h2. Installation
 
@@ -50,6 +50,15 @@ There are two separators which csonv.js handles:
 
 * @Csonv.separators.column@ (default: @";"@) - Used to separate columns
 * @Csonv.separators.array@ (default: @","@) - Used to separate array values
+
+You can change the separators by assigning a custom one:
+
+<pre>
+  <script>
+    Csonv.separators.column = "|";
+    Csonv.separators.array  = "/";
+  </script>
+</pre>
 
 h4. An example
 
