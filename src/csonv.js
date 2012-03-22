@@ -37,6 +37,9 @@ Csonv = (function(undefined) {
       "boolean": function(value) {
         return parseInt(value, 10) == 1;
       },
+      "date": function(value) {
+        return new Date(value);
+      },
       "strings": function(value) {
         return n("string", value);
       },
@@ -49,6 +52,10 @@ Csonv = (function(undefined) {
       "booleans": function(value) {
         return n("boolean", value);
       },
+      "dates": function(value) {
+        return n("date", value);
+      },
+
       "relation": function(ids, type, url, id) {
         var assoc     = type.split(":");
         var assoc_url = resolvePath(url, assoc[0] + ".csv");
