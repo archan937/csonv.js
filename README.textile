@@ -45,6 +45,7 @@ The data types available are:
 * @integer@ or an array of @integers@
 * @float@ or an array of @floats@
 * @boolean@ or an array of @booleans@ (options are: &lt;empty&gt;, @0@ or @1@)
+* @date@ or an array of @dates@ (RFC2822 or ISO8601)
 
 There are two separators which csonv.js handles:
 
