@@ -1,6 +1,10 @@
 = csonv.js CHANGELOG
 
-== Version 0.1.2 (June xx, 2011)
+== Version 0.1.3 (April 13, 2012)
+
+* Added date support (thanks to Robert Jackson)
+
+== Version 0.1.2 (June 15, 2011)
 
 * Being able to fetch relational data both ways (yes!)
 * Improved resolving url with a relative path
