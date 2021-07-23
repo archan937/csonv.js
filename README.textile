@@ -305,7 +305,7 @@ The resulting @authors.csv@ data will look like this:
 ]
 </pre>
 
-For a more complex result, please take a look at "http://archan937.github.com/csonv.js":http://archan937.github.com/csonv.js for a live demo.
+For a more complex result, please take a look at "http://archan937.github.io/csonv.js":http://archan937.github.io/csonv.js for a live demo.
 
 h2. Closing words
 
